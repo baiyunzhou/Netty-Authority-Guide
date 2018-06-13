@@ -32,13 +32,13 @@ public class BIOClient {
 					continue;
 				}
 				printWriter.println(request);
-				System.out.println("向服务器端【" + remoteSocketAddress + "】发送请求：" + request);
+				System.out.println("服务器端【" + remoteSocketAddress + "】请求数据：" + request);
 				String response = bufferedReader.readLine();
 				System.out.println("服务器端【" + remoteSocketAddress + "】响应数据：" + response);
 			}
 
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		} finally {
 			if (null != bufferedReader) {
 				try {

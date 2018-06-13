@@ -30,22 +30,25 @@ public class ServerHandler implements Runnable {
 		PrintWriter printWriter = null;
 		try {
 			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+			printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 			while (true) {
 				String request = bufferedReader.readLine();
 				if (null == request) {
 					continue;
 				}
-				System.out.println("接收到客户端【" + remoteSocketAddress + "】发送的请求数据：" + request);
+				System.out.println("接收到客户端【" + remoteSocketAddress + "】请求数据：" + request);
+				String response = null;
 				if (QUERY_TIME.equalsIgnoreCase(request)) {
-					String response = "Now is : " + new Date().toString();
-					System.out.println("返回给客户端【" + remoteSocketAddress + "】响应数据：" + response);
-					printWriter.println(response);
+					response = "Now is : " + new Date().toString();
 				} else {
-					printWriter.println("Only process :" + QUERY_TIME);
+					response = "Only process :" + QUERY_TIME;
 				}
+				System.out.println("返回给客户端【" + remoteSocketAddress + "】响应数据：" + response);
+				printWriter.println(response);
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
 			if (null != bufferedReader) {
 				try {
 					bufferedReader.close();
