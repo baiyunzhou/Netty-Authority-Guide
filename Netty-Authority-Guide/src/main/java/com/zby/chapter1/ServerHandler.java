@@ -13,7 +13,7 @@ import java.util.Date;
  * 
  * @author zhoubaiyun
  * @date 2018年6月13日
- * @Description 服务端处理器
+ * @Description BIO服务端处理器
  */
 public class ServerHandler implements Runnable {
 	private static final String QUERY_TIME = "query time";

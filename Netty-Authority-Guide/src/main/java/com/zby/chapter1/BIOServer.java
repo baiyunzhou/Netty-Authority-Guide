@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * 
+ * @author zhoubaiyun
+ * @date 2018年6月13日
+ * @Description BIO服务端
+ */
 public class BIOServer {
 	private static final int PORT = 1314;
 

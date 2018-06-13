@@ -9,6 +9,12 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Scanner;
 
+/**
+ * 
+ * @author zhoubaiyun
+ * @date 2018年6月13日
+ * @Description NIO客户端
+ */
 public class BIOClient {
 	private static final String HOST = "127.0.0.1";
 	private static final int PORT = 1314;
@@ -27,6 +33,7 @@ public class BIOClient {
 			printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			while (true) {
+				System.out.println("请输入请求：");
 				String request = scanner.nextLine();
 				if (null == request) {
 					continue;
