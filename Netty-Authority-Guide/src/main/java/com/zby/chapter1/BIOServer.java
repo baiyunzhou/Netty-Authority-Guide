@@ -13,7 +13,7 @@ import java.net.Socket;
 public class BIOServer {
 	private static final int PORT = 1314;
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		ServerSocket serverSocket = null;
 		try {
 			serverSocket = new ServerSocket(PORT);
@@ -24,10 +24,16 @@ public class BIOServer {
 				System.out.println("新建客户端连接,客户端地址为：		" + socket.getRemoteSocketAddress());
 				new Thread(new ServerHandler(socket)).start();
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
 			if (null != serverSocket) {
 				System.out.println("The server close...");
-				serverSocket.close();
+				try {
+					serverSocket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				serverSocket = null;
 			}
 		}

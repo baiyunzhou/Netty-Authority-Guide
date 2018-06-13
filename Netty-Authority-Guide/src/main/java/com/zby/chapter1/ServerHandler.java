@@ -52,8 +52,8 @@ public class ServerHandler implements Runnable {
 			if (null != bufferedReader) {
 				try {
 					bufferedReader.close();
-				} catch (IOException e1) {
-					e1.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 			if (null != printWriter) {
@@ -62,8 +62,8 @@ public class ServerHandler implements Runnable {
 			if (null != socket) {
 				try {
 					socket.close();
-				} catch (IOException e1) {
-					e1.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 				socket = null;
 			}
