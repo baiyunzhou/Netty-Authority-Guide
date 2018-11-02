@@ -6,8 +6,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import com.zby.chapter2.bio.processer.CommandProcesser;
 
 /**
  * 
@@ -16,13 +18,17 @@ import java.util.Date;
  * @Description BIO服务端处理器
  */
 public class ServerHandler implements Runnable {
-	private static final String QUERY_TIME = "query time";
-	private Socket socket;
-	private SocketAddress remoteSocketAddress;
 
-	public ServerHandler(Socket socket) {
+	private Socket socket;
+	private String tip;
+	private List<CommandProcesser> processers;
+
+	public ServerHandler(Socket socket, List<CommandProcesser> processers) {
+		Objects.requireNonNull(socket, "socket must not be null");
+		Objects.requireNonNull(processers, "processers must not be null");
 		this.socket = socket;
-		this.remoteSocketAddress = socket.getRemoteSocketAddress();
+		this.processers = processers;
+		tip = buildTip();
 	}
 
 	public void run() {
@@ -31,22 +37,27 @@ public class ServerHandler implements Runnable {
 		try {
 			bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+			printWriter.println(tip);
 			while (true) {
 				String request = bufferedReader.readLine();
 				if (null == request) {
 					continue;
 				}
-				System.out.println("接收到客户端【" + remoteSocketAddress + "】请求数据：" + request);
+				System.out.println("接收到客户端【" + socket.getRemoteSocketAddress() + "】请求数据：" + request);
 				String response = null;
-				if (QUERY_TIME.equalsIgnoreCase(request)) {
-					response = "Now is : " + new Date().toString();
-				} else {
-					response = "Only process :" + QUERY_TIME;
+				for (CommandProcesser commandProcesser : processers) {
+					if (commandProcesser.support(request)) {
+						response = commandProcesser.process(socket, request);
+						break;
+					}
 				}
-				System.out.println("返回给客户端【" + remoteSocketAddress + "】响应数据：" + response);
+				if (null == response) {
+					response = tip;
+				}
+				System.out.println("返回给客户端【" + socket.getRemoteSocketAddress() + "】响应数据：" + response);
 				printWriter.println(response);
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			if (null != bufferedReader) {
@@ -68,6 +79,17 @@ public class ServerHandler implements Runnable {
 				socket = null;
 			}
 		}
+	}
+
+	private String buildTip() {
+		StringBuilder tip = new StringBuilder();
+		tip.append("您好，客户端！你可以执行的请求列表：");
+		for (CommandProcesser commandProcesser : processers) {
+			tip.append("【");
+			tip.append(commandProcesser.processOption());
+			tip.append("】");
+		}
+		return tip.toString();
 	}
 
 }
