@@ -25,7 +25,7 @@ public class WriteOutputStream implements Runnable {
 					continue;
 				}
 				printWriter.println(line);
-				System.out.println("发送请求数据：" + line);
+				// System.out.println("发送请求数据：" + line);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

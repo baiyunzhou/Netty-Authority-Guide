@@ -24,7 +24,7 @@ public class ReadInputStream implements Runnable {
 				if (null == read || read.isEmpty()) {
 					continue;
 				}
-				System.out.println("接收到响应数据：" + read);
+				System.out.println(">" + read);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
