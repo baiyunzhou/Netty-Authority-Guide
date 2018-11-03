@@ -21,19 +21,26 @@ import com.zby.chapter2.bio.processer.impl.TimeCommandProcesser;
 /**
  * 
  * @author zby
- * @date 2018年6月13日
- * @Description BIO服务端
+ * @date 2018年11月3日
+ * @description BIO服务端
  */
 public class BIOServer {
-	private static final int PORT = 1314;
+	private static final int PORT = 8080;
+	private static final int BACKLOG = 1024;
 	private static final ConcurrentMap<Socket, ClientInfo> CONCURRENT_MAP = new ConcurrentHashMap<>();
 	private static final AtomicInteger idGenerator = new AtomicInteger(1);
 
 	public static void main(String[] args) {
-		start();
+		if (0 == args.length) {
+			start(PORT, BACKLOG);
+		} else if (1 == args.length) {
+			start(Integer.parseInt(args[0]), BACKLOG);
+		} else {
+			start(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+		}
 	}
 
-	public static void start() {
+	public static void start(int port, int backlog) {
 		ServerSocket serverSocket = null;
 		ExecutorService executorService = Executors.newFixedThreadPool(20, new ThreadFactory() {
 			private AtomicInteger id = new AtomicInteger(1);
@@ -44,7 +51,7 @@ public class BIOServer {
 			}
 		});
 		try {
-			serverSocket = new ServerSocket(PORT, 1024);
+			serverSocket = new ServerSocket(port, backlog);
 			System.out.println("服务器启动完成:" + serverSocket.getLocalSocketAddress());
 			Socket socket = null;
 			List<CommandProcesser> commandProcessers = new ArrayList<>();
@@ -56,7 +63,8 @@ public class BIOServer {
 				int id = idGenerator.getAndIncrement();
 				System.out.println("新建客户端连接,客户端地址为：	" + socket.getRemoteSocketAddress());
 				System.out.println("当前连接数：" + id);
-				CONCURRENT_MAP.put(socket, new ClientInfo(id, "client" + id, socket.getRemoteSocketAddress().toString()));
+				CONCURRENT_MAP.put(socket,
+						new ClientInfo(id, "client" + id, socket.getRemoteSocketAddress().toString()));
 				executorService.execute(new ServerHandler(socket, commandProcessers));
 			}
 		} catch (Exception e) {

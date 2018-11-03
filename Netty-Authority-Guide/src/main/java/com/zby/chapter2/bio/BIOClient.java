@@ -9,19 +9,25 @@ import com.zby.chapter2.bio.thread.WriteOutputStream;
 
 /**
  * 
- * @author zhoubaiyun
- * @date 2018年6月13日
- * @Description NIO客户端
+ * @author zby
+ * @date 2018年11月3日
+ * @description BIO客户端
  */
 public class BIOClient {
 	private static final String HOST = "127.0.0.1";
-	private static final int PORT = 1314;
+	private static final int PORT = 8080;
 
 	public static void main(String[] args) {
-		start();
+		if (0 == args.length) {
+			start(HOST, PORT);
+		} else if (1 == args.length) {
+			start(args[0], PORT);
+		} else {
+			start(args[0], Integer.parseInt(args[1]));
+		}
 	}
 
-	public static void start() {
+	public static void start(String host, int port) {
 		Socket socket = null;
 		try {
 			socket = new Socket(HOST, PORT);
