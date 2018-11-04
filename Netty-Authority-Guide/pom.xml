@@ -12,6 +12,11 @@
 			<artifactId>netty-all</artifactId>
 			<version>4.1.28.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>org.msgpack</groupId>
+			<artifactId>msgpack</artifactId>
+			<version>0.6.12</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
