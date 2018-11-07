@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 import java.util.Date;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.bootstrap.ServerBootstrapConfig;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -16,6 +17,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.AttributeKey;
 
 /**
  * 
@@ -30,16 +34,19 @@ public class TimerServer {
 		EventLoopGroup worker = new NioEventLoopGroup();
 		try {
 			ServerBootstrap serverBootstrap = new ServerBootstrap();
+			ServerBootstrapConfig serverBootstrapConfig = serverBootstrap.config();
+			System.out.println("serverBootstrapConfig:" + serverBootstrapConfig);
 			ChannelFuture channelFuture = serverBootstrap.group(boss, worker).channel(NioServerSocketChannel.class)
-					.option(ChannelOption.SO_BACKLOG, 1024).childHandler(new ChannelInitializer<SocketChannel>() {
-
+					.localAddress("127.0.0.1", 8080).option(ChannelOption.SO_BACKLOG, 1024).attr(AttributeKey.valueOf("name"), "zby")
+					.childOption(ChannelOption.SO_KEEPALIVE, true).childAttr(AttributeKey.valueOf("name"), "child")
+					.handler(new LoggingHandler(TimerServer.class, LogLevel.INFO)).childHandler(new ChannelInitializer<SocketChannel>() {
 						@Override
 						protected void initChannel(SocketChannel ch) throws Exception {
 							ChannelPipeline pipeline = ch.pipeline();
 							pipeline.addLast(new TimerServerHandler());
 						}
-
-					}).bind(8080).sync();
+					}).bind().sync();
+			System.out.println("serverBootstrapConfig:" + serverBootstrapConfig);
 			channelFuture.channel().closeFuture().sync();
 		} finally {
 			boss.shutdownGracefully();
@@ -59,8 +66,7 @@ public class TimerServer {
 			String request = new String(data, utf8).substring(0, data.length - System.lineSeparator().length());
 			System.out.println("request:" + request + ";counter:" + ++counter);
 			@SuppressWarnings("deprecation")
-			String response = "query time order".equalsIgnoreCase(request)
-					? new Date().toLocaleString() + System.lineSeparator()
+			String response = "query time order".equalsIgnoreCase(request) ? new Date().toLocaleString() + System.lineSeparator()
 					: "Bad Request" + System.lineSeparator();
 			ByteBuf buffer = Unpooled.copiedBuffer(response.getBytes(utf8));
 			ctx.writeAndFlush(buffer);

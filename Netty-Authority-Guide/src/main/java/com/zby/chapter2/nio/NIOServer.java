@@ -28,9 +28,10 @@ public class NIOServer {
 		SelectorProvider provider = SelectorProvider.provider();
 		serverSocketChannel = provider.openServerSocketChannel();
 		selector = provider.openSelector();
-		serverSocketChannel.bind(new InetSocketAddress(port), backlog);
 		serverSocketChannel.configureBlocking(block);
-		serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+		serverSocketChannel.bind(new InetSocketAddress(port), backlog);
+		SelectionKey selectionKey = serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+		selectionKey.attach(new Object());
 		System.out.println("The server listen on :" + port);
 	}
 
@@ -78,7 +79,8 @@ public class NIOServer {
 		ServerSocketChannel serverSocketChannel = (ServerSocketChannel) selectionKey.channel();
 		SocketChannel socketChannel = serverSocketChannel.accept();
 		socketChannel.configureBlocking(false);
-		socketChannel.register(selector, SelectionKey.OP_READ);
+		SelectionKey selectionKey2 = socketChannel.register(selector, SelectionKey.OP_READ);
+		selectionKey2.attach(new Object());
 	}
 
 	private void handleRead(SelectionKey selectionKey) throws IOException {
